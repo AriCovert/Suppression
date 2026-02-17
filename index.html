@@ -20,7 +20,7 @@
         html, body {
             margin: 0;
             padding: 0;
-            background: ffffff;
+            background: #ffffff;
             color: #000000;
             font-family: monospace;
             height: 100%;
@@ -46,16 +46,12 @@
             cursor: none;
         }
 
-        /*
-           Classe utilitaire pour cacher un élément
-        */
+        /* Classe utilitaire pour cacher un élément */
         .hidden {
             display: none;
         }
 
-        /*
-           Conteneur de la barre de progression
-        */
+        /* Conteneur de la barre de progression */
         .progress-container {
             width: 300px;      /* largeur fixe */
             max-width: 90vw;   /* sécurité mobile */
@@ -64,10 +60,8 @@
             margin-top: 20px;
         }
 
-        /*
-           Barre de progression interne :
-           - Largeur modifiée dynamiquement en JS
-        */
+        /* Barre de progression interne :
+           - Largeur modifiée dynamiquement en JS */
         .progress-bar {
             height: 100%;
             width: 0%;
@@ -84,7 +78,7 @@
         }
         
         button {
-            background: ffffff;
+            background: #ffffff;
             color: #000000;
             border: 1px solid #000000;
             padding: 8px 20px;
@@ -93,19 +87,15 @@
         }
 
         button:hover {
-            background: #003322;
+            background: #B0B0B0;
         }
 
-        /*
-           Animation de disparition progressive
-        */
+        /* Animation de disparition progressive */
         .fade {
             animation: fadeOut 2s forwards;
         }
 
-        /*
-           Définition de l’animation fadeOut
-        */
+        /* Définition de l’animation fadeOut */
         @keyframes fadeOut {
             to { opacity: 0; }
         }
@@ -114,22 +104,18 @@
 
 <body>
 
-<!-- 
-     Conteneur principal affiché à l’écran
--->
+<!--  Conteneur principal affiché à l’écran ->
 <div id="screen">
 
     <div id="startScreen"> <!-- Mets en plein écran -->
-        <button onclick="startPrank()">Démarrer le diagnostic système</button>
+        <button onclick="launchPrank()">Démarrer</button>
     </div>
     
     <!-- Message principal (arrêt / redémarrage) -->
-    <div id="message">Arrêt du système...</div>
+    <div id="message" class="hidden">Arrêt du système...</div>
 
-    <!-- 
-         Section de réinitialisation
-         Cachée au départ
-    -->
+    <!-- Section de réinitialisation
+         Cachée au départ -->
     <div id="progressSection" class="hidden">
         <div>Data suppression...</div>
 
@@ -152,20 +138,15 @@
     </div>
     
     <!-- Message final -->
-    <div id="finalMessage" class="hidden">
-        Factory restore ended.<br>
-        Réussite de la suppression des données.<br>
-        Retour à la configuration d'usine terminé.
-    </div>
+    <div id="finalMessage" class="hidden"></div>
 
 </div>
 
 <script>
-    /*
-       Récupération des éléments HTML
-       Cela permet de les manipuler via JavaScript
-    */
-    const setupSection = document.getElementById("setupSection");
+    /* Récupération des éléments HTML
+       Cela permet de les manipuler via JavaScript */
+    
+    const startScreen = document.getElementById("startScreen");
     const message = document.getElementById("message");
     const progressSection = document.getElementById("progressSection");
     const progressBar = document.getElementById("progressBar");
@@ -174,17 +155,17 @@
     const finalMessage = document.getElementById("finalMessage");
 
     /**
-     * NOUVELLE FONCTION : Point d'entrée de la blague
-     * Déclenchée par l'utilisateur pour autoriser le plein écran.
+     * Cette fonction est appelée par le bouton.
+     * Elle gère le plein écran ET lance la séquence.
      */
     function launchPrank() {
         // 1. Passage en plein écran
         enterFullscreen();
         
         // 2. On cache le bouton de départ
-        setupSection.classList.add("hidden");
+        startScreen.classList.add("hidden");
         
-        // 3. On masque le curseur pour le réalisme
+        // 3. On masque le curseur pour 'effet "perte de contrôle"
         document.body.classList.add("no-cursor");
 
         // 4. On lance la séquence originale
@@ -205,11 +186,11 @@
         }
     }
 
-    /*
-       Simulation de l’arrêt du système
-    */
+    /* Simulation de l’arrêt du système */
     function simulateShutdown() {
 
+        // Affiche le premier message qui était caché
+        message.classList.remove("hidden");
         // Modification du texte affiché
         message.textContent = "Lien vers suppression totale activé";
 
@@ -220,14 +201,11 @@
         }, 3000);
     }
 
-    /*
-       Simulation du redémarrage
-    */
+    /* Simulation du redémarrage */
     function simulateReboot() {
 
         // On réaffiche le message
         message.classList.remove("hidden");
-        message.classList.remove("fade");
 
         message.textContent = "Suppression des données de l'appareil...";
 
@@ -238,9 +216,7 @@
         }, 3000);
     }
 
-    /*
-       Simulation d’une réinitialisation avec progression
-    */
+    /* Simulation d’une réinitialisation avec progression */
     function simulateReset() {
 
         // Affiche la section progression
@@ -248,12 +224,9 @@
 
         let progress = 0;
 
-        /*
-           Intervalle qui augmente progressivement la barre
-           Math.random() donne un effet moins prévisible
-        */
+        /* Intervalle qui augmente progressivement la barre
+           Math.random() donne un effet moins prévisible */
         const interval = setInterval(() => {
-
             // Incrément aléatoire pour plus de réalisme
             progress += Math.random() * 3;
 
@@ -280,18 +253,16 @@
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    /*
-       Fonction appelée pour les deux boutons
+    /* Fonction appelée pour les deux boutons
        Peu importe le bouton cliqué,
-       la réponse affichée sera toujours NON.
-    */
+       la réponse affichée sera toujours NON. */
     async function handleChoice() {
 
         confirmBox.classList.add("hidden");
         progressSection.classList.add("hidden");
         finalMessage.classList.remove("hidden");
 
-        // On recache le curseur pour le message de fin "fatal"
+        // On recache le curseur pour le message de fin 
         document.body.classList.add("no-cursor");
 
         finalMessage.innerHTML = "";
@@ -306,17 +277,19 @@
     
     }
 
-    /*
-       Point d’entrée :
-       Lorsque la page est complètement chargée
+    /* IMPORTANT : On enlève simulateShutdown d'ici.
+       On ne laisse que enterFullscreen si tu veux tenter, 
+       mais c'est le bouton qui fera tout le travail maintenant.
     */
     window.onload = () => {
-        enterFullscreen();     // Tentative plein écran
-        simulateShutdown();    // Lancement séquence
+        // On ne lance rien automatiquement pour éviter le bug d'affichage
+    /* enterFullscreen();     // Tentative plein écran
+       simulateShutdown();    // Lancement séquence */
     };
 </script>
 
 </body>
 </html>
+
 
 
