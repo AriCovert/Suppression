@@ -41,6 +41,11 @@
             text-align: center;
         }
 
+        /* AJOUT : Style pour masquer la souris pendant la blague */
+        .no-cursor {
+            cursor: none;
+        }
+
         /*
            Classe utilitaire pour cacher un élément
         */
@@ -114,6 +119,10 @@
 -->
 <div id="screen">
 
+    <div id="startScreen"> <!-- Mets en plein écran -->
+        <button onclick="startPrank()">Démarrer le diagnostic système</button>
+    </div>
+    
     <!-- Message principal (arrêt / redémarrage) -->
     <div id="message">Arrêt du système...</div>
 
@@ -156,6 +165,7 @@
        Récupération des éléments HTML
        Cela permet de les manipuler via JavaScript
     */
+    const setupSection = document.getElementById("setupSection");
     const message = document.getElementById("message");
     const progressSection = document.getElementById("progressSection");
     const progressBar = document.getElementById("progressBar");
@@ -163,13 +173,35 @@
     const confirmBox = document.getElementById("confirmBox");
     const finalMessage = document.getElementById("finalMessage");
 
-    /*
-       Fonction pour passer en plein écran
-       Note : Sur mobile, cela peut nécessiter une interaction utilisateur
-    */
+    /**
+     * NOUVELLE FONCTION : Point d'entrée de la blague
+     * Déclenchée par l'utilisateur pour autoriser le plein écran.
+     */
+    function launchPrank() {
+        // 1. Passage en plein écran
+        enterFullscreen();
+        
+        // 2. On cache le bouton de départ
+        setupSection.classList.add("hidden");
+        
+        // 3. On masque le curseur pour le réalisme
+        document.body.classList.add("no-cursor");
+
+        // 4. On lance la séquence originale
+        simulateShutdown();
+    }
+    
+    /**
+     * Gère la compatibilité du plein écran sur différents navigateurs
+     */
     function enterFullscreen() {
-        if (document.documentElement.requestFullscreen) {
-            document.documentElement.requestFullscreen();
+        const doc = document.documentElement;
+        if (doc.requestFullscreen) {
+            doc.requestFullscreen();
+        } else if (doc.webkitRequestFullscreen) { /* Safari / Chrome Mobile */
+            doc.webkitRequestFullscreen();
+        } else if (doc.msRequestFullscreen) { /* IE11 */
+            doc.msRequestFullscreen();
         }
     }
 
@@ -185,7 +217,7 @@
         setTimeout(() => {
             message.classList.add("hidden");
             simulateReboot();
-        }, 3500);
+        }, 3000);
     }
 
     /*
@@ -232,6 +264,8 @@
                 // Affichage de la boîte de confirmation
                 setTimeout(() => {
                     confirmBox.classList.remove("hidden");
+                    // On réaffiche la souris pour qu'il puisse cliquer sur "Oui/Non"
+                    document.body.classList.remove("no-cursor");
                 }, 800);
             }
 
@@ -255,9 +289,11 @@
 
         confirmBox.classList.add("hidden");
         progressSection.classList.add("hidden");
-
         finalMessage.classList.remove("hidden");
-        
+
+        // On recache le curseur pour le message de fin "fatal"
+        document.body.classList.add("no-cursor");
+
         finalMessage.innerHTML = "";
         finalMessage.innerHTML += "Selected answer : OUI<br><br>";
         await sleep(500);
@@ -282,3 +318,4 @@
 
 </body>
 </html>
+
